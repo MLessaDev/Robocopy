@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: RoboCopy
+Bundle-SymbolicName: RoboCopy; singleton:=true
+Bundle-Version: 0.1
+Bundle-Activator: robocopy.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: ClipboardTransfer/mysql-connector-java-5.1.22-bin.jar,
+ .
