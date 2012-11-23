@@ -8,6 +8,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 
@@ -32,12 +34,11 @@ public class Action implements IWorkbenchWindowActionDelegate {
 	private MainForm form;
 
 	public Action() {
-
+	
 	}
 
 	public void run(IAction action) {
 		if(!active){
-			
 			String ip=null;
 			try {
 				BufferedReader in = new BufferedReader(new FileReader(".server.dat"));
@@ -49,6 +50,10 @@ public class Action implements IWorkbenchWindowActionDelegate {
 			}
 			if(ip==null){
 				ip=JOptionPane.showInputDialog("Digite o endereço ip do servidor.");
+				while (!validate(ip)){
+					JOptionPane.showMessageDialog(null, "Endereço ip inválido. Tente novamente");
+					ip=JOptionPane.showInputDialog("Digite o endereço ip do servidor.");
+				}
 				File arquivo = new File(".server.dat");
 				try {
 					PrintStream print = new PrintStream(arquivo);
@@ -58,12 +63,16 @@ public class Action implements IWorkbenchWindowActionDelegate {
 					e.printStackTrace();
 				}
 			}		
-			
+
 			DatabaseAccess.setIp(ip);
 			db = new DatabaseAccess();	
 			user = db.getThisUser();
 			if (user==null){
 				String nome =JOptionPane.showInputDialog("Digite seu nome para começar a usar o Robocopy!");
+				while (nome==null || nome.trim().length()<1){
+					JOptionPane.showMessageDialog(null, "Nome inválido, tente novamente");
+					nome =JOptionPane.showInputDialog("Digite seu nome para começar a usar o Robocopy!");
+				}
 				db.AddUser(nome);
 			}
 			server = new ReciveClipboard(user.getDoor());
@@ -74,6 +83,16 @@ public class Action implements IWorkbenchWindowActionDelegate {
 		}else{
 			form.getFrame().setVisible(true);
 		}
+	}
+	public static boolean validate(String ip){          
+		String PATTERN = 
+				"^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+						"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+						"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+						"([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
+		Pattern pattern = Pattern.compile(PATTERN);
+		Matcher matcher = pattern.matcher(ip);
+		return matcher.matches();             
 	}
 
 	public void selectionChanged(IAction action, ISelection selection) {
